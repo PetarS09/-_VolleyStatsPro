@@ -3,9 +3,6 @@
 #include <vector>
 #include <memory>
 
-// ============================================================================
-// БАЗОВ КЛАС: Person
-// ============================================================================
 class Person {
 private:
     std::string name;
@@ -40,22 +37,21 @@ public:
     }
 };
 
-// ============================================================================
-// НАСЛЕДНИК: Player (С добавена логика за набори/възрастови групи)
-// ============================================================================
 class Player : public Person {
 private:
     std::string position;
     int jerseyNumber;
+    int totalAttacks; 
+    int attackErrors;
 
 public:
     Player(std::string name, std::string egn, std::string phone, std::string birthDate, 
            std::string position, int jerseyNumber)
-        : Person(name, egn, phone, birthDate), position(position), jerseyNumber(jerseyNumber) {}
+        : Person(name, egn, phone, birthDate), position(position), jerseyNumber(jerseyNumber),
+          totalAttacks(0), attackErrors(0) {}
 
     std::string getPosition() const { return position; }
 
-    // Функционалност: Автоматично определяне на възрастова група (Набор)
     std::string getAgeGroup() const {
         int age = getAge();
         if (age < 16) return "U16";
@@ -64,16 +60,26 @@ public:
         return "Мъже/Жени";
     }
 
+    void addAttackStats(int attacks, int errors) {
+        if (attacks >= 0 && errors >= 0 && errors <= attacks) {
+            totalAttacks += attacks;
+            attackErrors += errors;
+        }
+    }
+
+    double getAttackEfficiency() const {
+        if (totalAttacks == 0) return 0.0;
+        return static_cast<double>(totalAttacks - attackErrors) / totalAttacks;
+    }
+
     void printInfo() const override {
         Person::printInfo();
         std::cout << " | №" << jerseyNumber << " | Позиция: " << position 
-                  << " | Категория: " << getAgeGroup() << "\n";
+                  << " | Категория: " << getAgeGroup() 
+                  << " | Ефективност в атака: " << getAttackEfficiency() * 100 << "%\n";
     }
 };
 
-// ============================================================================
-// НАСЛЕДНИК: Coach
-// ============================================================================
 class Coach : public Person {
 private:
     std::string licenseID;
@@ -88,22 +94,51 @@ public:
     }
 };
 
-// ============================================================================
-// ГЛАВНА ФУНКЦИЯ
-// ============================================================================
+class Match {
+private:
+    std::string opponent;
+    std::string date;
+    int teamSets;
+    int opponentSets;
+
+public:
+    Match(std::string opponent, std::string date, int teamSets, int opponentSets)
+        : opponent(opponent), date(date), teamSets(teamSets), opponentSets(opponentSets) {}
+
+    void printMatchSummary() const {
+        std::cout << "[" << date << "] ВК Левски " << teamSets << " : " 
+                  << opponentSets << " " << opponent 
+                  << (teamSets > opponentSets ? " (Победа 🎉)" : " (Загуба ⁠❌)") << "\n";
+    }
+};
+
 int main() {
     std::vector<std::unique_ptr<Person>> teamSquad;
     
-    std::cout << "--- 1. Добавяне на състав и проверка на възрастовите групи ---\n";
-    // Георги е роден 2010 г. -> през 2026 г. е на 16 г. -> категория U16
+    std::cout << "--- 1. Базово добавяне на състав (Squad Management) ---\n";
     teamSquad.push_back(std::make_unique<Player>("Георги Петров", "104215xxxx", "0888111222", "2010-02-15", "Разпределител", 10));
-    // Добавяме играч, роден 2008 г. -> през 2026 г. е на 18 г. -> категория U18
-    teamSquad.push_back(std::make_unique<Player>("Мартин Иванов", "084512xxxx", "0888333444", "2008-05-12", "Диагонал", 7));
     teamSquad.push_back(std::make_unique<Coach>("Андрей Жеков", "800101xxxx", "0888999999", "1980-01-01", "A-0542"));
 
     for (const auto& member : teamSquad) {
         member->printInfo();
     }
-    
+    std::cout << "\n";
+
+    std::cout << "--- 2. Записване на мачове (Match Logging) ---\n";
+    std::vector<Match> matchHistory;
+    matchHistory.push_back(Match("ЦСКА", "2026-03-10", 3, 1));
+    for (const auto& match : matchHistory) {
+        match.printMatchSummary();
+    }
+    std::cout << "\n";
+
+    std::cout << "--- 3. Добавяне и анализ на статистика (Stats & Efficiency) ---\n";
+    Player* player1 = dynamic_cast<Player*>(teamSquad[0].get());
+    if (player1) {
+        player1->addAttackStats(20, 4); // Тестване на статистиката
+        std::cout << "Обновена статистика за " << player1->getName() << ":\n";
+        player1->printInfo();
+    }
+
     return 0;
 }
