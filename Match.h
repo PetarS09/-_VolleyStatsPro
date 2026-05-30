@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 
-// Структура, която пази резултата за един конкретен гейм
 struct SetScore {
     int teamPoints;
     int opponentPoints;
@@ -16,16 +15,15 @@ private:
     std::string date;
     int teamSets;
     int opponentSets;
-    std::vector<SetScore> setDetails; // Списък с резултатите от всеки изигран гейм
+    std::vector<SetScore> setDetails;
 
-    // Вътрешен метод за пълна валидация на правилата на FIVB
     bool validateMatch() const;
 
 public:
-    Match(std::string opponent, std::string date, int teamSets, int opponentSets, 
-          std::vector<SetScore> sets);
-          
+    Match(std::string opponent, std::string date, int teamSets, int opponentSets, std::vector<SetScore> sets);
+    
     void printMatchSummary() const;
+    std::string getFormattedSummary() const; // За нуждите на експорта на текстов файл
 };
 
 #endif
