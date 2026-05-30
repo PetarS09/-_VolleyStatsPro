@@ -1,58 +1,38 @@
 #include <iostream>
 #include "Team.h"
-#include "Match.h"
-#include "TrainingSession.h"
 
 int main() {
-    // 1. Управление на профили (Squad Management) и Автоматично категоризиране
-    Team myTeam("ВК Левски", "U18");
+    Team myTeam("ВК Левски", "Мъже/Жени");
 
-    myTeam.addPlayer(std::make_unique<Player>("Георги Петров", "104215xxxx", "0888111222", "2010-02-15", "Разпределител", 10));
-    myTeam.addPlayer(std::make_unique<Player>("Мартин Иванов", "084512xxxx", "0888333444", "2008-05-12", "Диагонал", 7));
-    myTeam.addPlayer(std::make_unique<Player>("Николай Василев", "094111xxxx", "0888555666", "2009-11-11", "Либеро", 4));
-    myTeam.addPlayer(std::make_unique<Player>("Александър Тодоров", "084214xxxx", "0888111333", "2008-02-14", "Посрещач", 5));
-    myTeam.addPlayer(std::make_unique<Player>("Симеон Николов", "094618xxxx", "0888444555", "2009-06-18", "Разпределител", 1));
-    myTeam.addPlayer(std::make_unique<Player>("Владимир Гърков", "084919xxxx", "0888777999", "2008-09-19", "Център", 12));
+    // ТЕСТ НА ОПИТА (100 забити срещу 2 забити):
+    // Играч 1: Истински нападател - 100 атаки, 50 грешки (50% ефективност)
+    auto playerVolume = std::make_unique<Player>("Мартин Нападателя", "054512xxxx", "0888333444", "2005-05-12", "Диагонал", 7);
+    playerVolume->addAttackStats(100, 50); // 100 общо, 50 грешни -> 50% еф.
+    myTeam.addPlayer(std::move(playerVolume));
 
-    myTeam.setCoach(std::make_unique<Coach>("Андрей Жеков", "800101xxxx", "0888999999", "1980-01-01", "A-0542", 42, true));
+    // Играч 2: Късметлия - 2 атаки, 0 грешки (100% ефективност, но твърде малко опити)
+    auto playerLucky = std::make_unique<Player>("Иван Късметлията", "064214xxxx", "0888111333", "2006-02-14", "Диагонал", 11);
+    playerLucky->addAttackStats(2, 0); // 2 общо, 0 грешни -> 100% еф.
+    myTeam.addPlayer(std::move(playerLucky));
 
-    // 2. Статистическо отчитане и автоматичен анализ
-    Player* p = myTeam.getPlayer(0); // Георги
-    if (p) {
-        p->addAttackStats(20, 4); // 20 атаки, 4 грешки
-        p->addServiceStats(3, 1);  // 3 аса, 1 грешка
-        p->addReceptionStats(8, 10); // 80% позитивно посрещане
+    // Добавяме и един Разпределител, за да тестваме неговата статистика за защита (digs)
+    auto setter = std::make_unique<Player>("Симеон Разпределителя", "044618xxxx", "0888444555", "2004-06-18", "Разпределител", 1);
+    setter->addDigStats(25); // 25 успешни спасявания в защита
+    setter->addServiceStats(4, 1);
+    myTeam.addPlayer(std::move(setter));
+
+    // Проверка за забрана за посрещане на Диагонал (Ще изпише предупреждение в конзолата)
+    Player* pMartin = myTeam.getPlayer(0);
+    if (pMartin) {
+        pMartin->addReceptionStats(5, 5); 
     }
-    
-    Player* p2 = myTeam.getPlayer(1); // Мартин
-    if (p2) {
-        p2->addAttackStats(30, 2);
-        p2->addServiceStats(5, 2);
-    }
 
+    std::cout << "\n--- СЪСТАВ И РЕЙТИНГИ ---\n";
     myTeam.printTeamSquad();
 
-    // 3. Дневник на мачовете (Match Logging)
-    std::vector<SetScore> scores1 = {{25,23}, {25,21}, {25,20}};
-    myTeam.addMatch(Match("ЦСКА", "2026-03-10", 3, 0, scores1));
-    
-    std::cout << "--- Дневник на мачовете ---\n";
-    scores1[0] = {25,23}; // Пример за извикване
-    Match m("ЦСКА", "2026-03-10", 3, 0, scores1);
-    m.printMatchSummary();
-    std::cout << "\n";
-
-    // 4. Управление на тренировъчния процес (Training Log) & Абстракция
-    myTeam.addTrainingSession(std::make_unique<CourtPractice>("2026-03-11", 90, "Блокада и контраатака"));
-    myTeam.addTrainingSession(std::make_unique<StrengthWorkout>("2026-03-12", 60, "Клекове и Вертикален отскок", 4, 6));
-    
-    myTeam.printTrainingLog();
-
-    // 5. Генериране на стартов състав (Line-up Generator)
+    // Генериране на състава. Благодарение на "experienceFactor", 
+    // Мартин ще има много по-висок рейтинг от Иван и ще бъде избран първи!
     myTeam.generateLineUp();
-
-    // 6. Експорт на сезонен отчет
-    myTeam.exportReport();
 
     return 0;
 }
