@@ -9,7 +9,7 @@ bool Coach::getIsHeadCoach() const { return isHeadCoach; }
 int Coach::getWinsCount() const { return winsCount; }
 std::string Coach::getLicenseID() const { return licenseID; }
 
-void Coach::printInfo() const override {
+void Coach::printInfo() const  {
     Person::printInfo();
     std::cout << " | [ТРЕНЬОР] " << (isHeadCoach ? "Главен треньор" : "Помощник треньор")
               << " | Победи: " << winsCount << " | Лиценз: " << licenseID << "\n";

@@ -109,7 +109,7 @@ double Player::getOverallPerformanceScore() const {
     return baseScore * experienceFactor;
 }
 
-void Player::printInfo() const override {
+void Player::printInfo() const {
     Person::printInfo();
     std::cout << " | №" << jerseyNumber << " | " << position;
     if (position != "Разпределител" && position != "Либеро") {
