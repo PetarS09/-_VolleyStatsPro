@@ -1,27 +1,29 @@
 #include <iostream>
-#include "Team.h"
+#include <vector>
 #include "Match.h"
 
 int main() {
-    Team myTeam("ВК Левски", "U18");
+    std::cout << "--- Тестване на Волейболните Валидации за Мачове ---\n\n";
 
-    myTeam.addPlayer(std::make_unique<Player>("Георги Петров", "104215xxxx", "0888111222", "2010-02-15", "Разпределител", 10));
-    myTeam.addPlayer(std::make_unique<Player>("Мартин Иванов", "084512xxxx", "0888333444", "2008-05-12", "Диагонал", 7));
-    myTeam.addPlayer(std::make_unique<Player>("Николай Василев", "094111xxxx", "0888555666", "2009-11-11", "Либеро", 4));
+    // ТЕСТ 1: Напълно валиден мач (3:1 с продължение в единия гейм 26:24)
+    std::vector<SetScore> validSets = { {25, 20}, {26, 24}, {18, 25}, {25, 13} };
+    Match m1("ЦСКА", "2026-03-10", 3, 1, validSets);
+    m1.printMatchSummary();
 
-    myTeam.setCoach(std::make_unique<Coach>("Андрей Жеков", "800101xxxx", "0888999999", "1980-01-01", "A-0542", 42, true));
-    myTeam.setCoach(std::make_unique<Coach>("Христо Цветанов", "780214xxxx", "0888123456", "1978-02-14", "B-0981", 15, false));
+    // ТЕСТ 2 (ГРЕШКА В КРАЙНИЯ РЕЗУЛТАТ): Въвеждаме 2:0 в геймовете
+    std::vector<SetScore> invalidResult = { {25, 20}, {25, 18} };
+    Match m2("Марек", "2026-03-12", 2, 0, invalidResult);
+    m2.printMatchSummary();
 
-    myTeam.printTeamSquad();
+    // ТЕСТ 3 (ГРЕШКА В ГЕЙМ - БЕЗ РАЗЛИКА): Резултат 25:24 (Невъзможен във волейбола)
+    std::vector<SetScore> noDiffSets = { {25, 24}, {25, 11}, {25, 15} };
+    Match m3("Монтана", "2026-03-15", 3, 0, noDiffSets);
+    m3.printMatchSummary();
 
-    std::vector<Match> matchHistory;
-    matchHistory.push_back(Match("ЦСКА", "2026-03-10", 3, 1));
-    matchHistory.push_back(Match("Левски", "2026-03-17", 2, 2));
-    matchHistory.push_back(Match("Славия", "2026-03-24", 1, 3));
-
-    for (const auto& match : matchHistory) {
-        match.printMatchSummary();
-    }
+    // ТЕСТ 4 (ГРЕШКА В ГЕЙМ - СЛЕД 25 ТОЧКИ): Резултат 28:24 (Разликата е 4 точки, трябвало е да свърши при 26:24)
+    std::vector<SetScore> badExtension = { {25, 22}, {28, 24}, {25, 19} };
+    Match m4("Нефтохимик", "2026-03-18", 3, 0, badExtension);
+    m4.printMatchSummary();
 
     return 0;
 }
