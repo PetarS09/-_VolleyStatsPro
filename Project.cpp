@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Team.h"
 #include "Match.h"
+#include "TrainingSession.h"
 
 int main() {
     // 1. Управление на профили (Squad Management) и Автоматично категоризиране
@@ -41,10 +42,16 @@ int main() {
     m.printMatchSummary();
     std::cout << "\n";
 
-    // 4. Генериране на стартов състав (Line-up Generator)
+    // 4. Управление на тренировъчния процес (Training Log) & Абстракция
+    myTeam.addTrainingSession(std::make_unique<CourtPractice>("2026-03-11", 90, "Блокада и контраатака"));
+    myTeam.addTrainingSession(std::make_unique<StrengthWorkout>("2026-03-12", 60, "Клекове и Вертикален отскок", 4, 6));
+    
+    myTeam.printTrainingLog();
+
+    // 5. Генериране на стартов състав (Line-up Generator)
     myTeam.generateLineUp();
 
-    // 5. Експорт на сезонен отчет
+    // 6. Експорт на сезонен отчет
     myTeam.exportReport();
 
     return 0;
