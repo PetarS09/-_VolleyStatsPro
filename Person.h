@@ -4,7 +4,7 @@
 #include <string>
 
 class Person {
-private:
+protected:
     std::string name;
     std::string egn;
     std::string phone;

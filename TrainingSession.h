@@ -1,44 +1,47 @@
-#ifndef TRAINING_SESSION_H
-#define TRAINING_SESSION_H
+#ifndef TRAININGSESSION_H
+#define TRAININGSESSION_H
 
 #include <string>
+#include <iostream>
 
-// Абстрактен базов клас за тренировъчния процес
+// Базов абстрактен клас
 class TrainingSession {
-private:
+protected:
     std::string date;
-    int durationMinutes;
-
+    int duration;
 public:
-    TrainingSession(std::string date, int durationMinutes);
-    virtual ~TrainingSession();
-
-    std::string getDate() const;
-    int getDuration() const;
-
-    // Чисто виртуален метод (Превръща класа в абстрактен)
+    TrainingSession(std::string date, int duration);
+    virtual ~TrainingSession() = default;
     virtual void logSessionDetails() const = 0;
 };
 
-// Наследник 1: Техническа тренировка в зала
+// Наследник 1: Техническа тренировка
 class CourtPractice : public TrainingSession {
 private:
-    std::string tacticalFocus; // напр. "Атака/Защита"
-
+    std::string tacticalFocus;
 public:
     CourtPractice(std::string date, int duration, std::string focus);
     void logSessionDetails() const override;
 };
 
-// Наследник 2: Силова тренировка във фитнес
+// Наследник 2: Силова тренировка
 class StrengthWorkout : public TrainingSession {
 private:
-    std::string exerciseType;
+    std::string exercise;
     int sets;
     int reps;
-
 public:
-    StrengthWorkout(std::string date, int duration, std::string exercise, int s, int r);
+    StrengthWorkout(std::string date, int duration, std::string ex, int s, int r);
+    void logSessionDetails() const override;
+};
+
+// Наследник 3: Физически тестове (Покрива изискването от заданието)
+class PhysicalTest : public TrainingSession {
+private:
+    int verticalJump;    // Вертикален отскок в см
+    double sprintSpeed;  // Скорост в секунди
+public:
+    PhysicalTest(std::string date, int duration, int jump, double speed);
     void logSessionDetails() const override;
 };
 

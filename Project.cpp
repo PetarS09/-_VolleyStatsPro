@@ -3,7 +3,6 @@
 #include <string>
 #include "Team.h"
 
-// Помощна функция за безопасно въвеждане на цяло число
 int getSafeInt(std::string prompt) {
     int value;
     while (true) {
@@ -12,13 +11,26 @@ int getSafeInt(std::string prompt) {
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             return value;
         }
-        std::cout << "❌ Невалиден вход! Моля, въведете число.\n";
+        std::cout << "❌ Невалиден вход! Моля, въведете цяло число.\n";
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 }
 
-// Помощна функция за избор на волейболен пост чрез меню
+double getSafeDouble(std::string prompt) {
+    double value;
+    while (true) {
+        std::cout << prompt;
+        if (std::cin >> value) {
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            return value;
+        }
+        std::cout << "❌ Невалиден вход! Моля, въведете десетично число.\n";
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+}
+
 std::string getVolleyballPosition() {
     while (true) {
         std::cout << "\nИзберете пост на играча (1-5):\n";
@@ -34,11 +46,10 @@ std::string getVolleyballPosition() {
         if (choice == 3) return "Център";
         if (choice == 4) return "Посрещач";
         if (choice == 5) return "Либеро";
-        std::cout << "❌ Невалидна опция! Изберете число между 1 и 5.\n";
+        std::cout << "❌ Невалидна опция! Изберете число между 1 and 5.\n";
     }
 }
 
-// Функция за намиране на играч в отбора чрез име или номер на екип
 Player* searchPlayerMenu(Team& team) {
     std::cout << "\nКак искате да намерите играча?\n";
     std::cout << "1. Чрез първо име\n";
@@ -65,31 +76,30 @@ Player* searchPlayerMenu(Team& team) {
 }
 
 int main() {
-    // АВТОМАТИЧНА КОРЕКЦИЯ ЗА БЪЛГАРСКИ ЕЗИК В WINDOWS КОНЗОЛАТА
     #ifdef _WIN32
     system("chcp 65001 > nul");
     #endif
 
     std::cout << "===================================================\n";
-    std::cout << "      ДОБРЕ ДОШЛИ В VOLLEYSTATS PRO v2.0           \n";
+    std::cout << "      ДОБРЕ ДОШЛИ В VOLLEYSTATS PRO v2.5           \n";
     std::cout << "===================================================\n";
 
-    // Инициализация на системата с един базов отбор (U21)
     Team myTeam("ВК Левски София", "U21");
     myTeam.setCoach(std::make_unique<Coach>("Андрей Жеков", "800101xxxx", "0888111222", "1980-01-01", "FIVB-III", 120, true));
 
     while (true) {
         std::cout << "\n--- ГЛАВНО МЕНЮ ---\n";
         std::cout << "1. Добавяне на нов играч в отбора\n";
-        std::cout << "2. Въвеждане на игрова статистика (Посрещане/Защита/Атака/Блок)\n";
-        std::cout << "3. Преглед на текущия състав и рейтинги\n";
-        std::cout << "4. Автоматично генериране на стартови 7 (Line-up)\n";
-        std::cout << "5. Регистриране на официален волейболен мач\n";
-        std::cout << "6. Записване на проведена тренировка\n";
-        std::cout << "7. Експорт на текстов отчет (report.txt) & Изход\n";
+        std::cout << "2. РЕДАКЦИЯ на съществуващ профил на играч\n";
+        std::cout << "3. Въвеждане на статистика от мач (Генератор за последните 3 срещи)\n";
+        std::cout << "4. Преглед на текущия състав и рейтинги\n";
+        std::cout << "5. Автоматично генериране на стартови 7 (Line-up от последните 3 мача)\n";
+        std::cout << "6. Регистриране на официален волейболен мач (Лимит 7-14 играчи)\n";
+        std::cout << "7. Записване на тренировка / ФИЗИЧЕСКИ ТЕСТОВЕ\n";
+        std::cout << "8. Експорт на текстов отчет (report.txt) & Изход\n";
         
-        int menuChoice = getSafeInt("Изберете опция (1-7): ");
-        if (menuChoice == 7) {
+        int menuChoice = getSafeInt("Изберете опция (1-8): ");
+        if (menuChoice == 8) {
             myTeam.exportReport();
             std::cout << "\n👋 Благодарим ви, че използвахте мениджъра! Довиждане.\n";
             break;
@@ -99,7 +109,6 @@ int main() {
             case 1: {
                 std::cout << "\n--- ДОБАВЯНЕ НА ИГРАЧ ---\n";
                 std::string name, egn, phone, birthDate;
-                
                 std::cout << "Въведете трите имена: ";
                 std::getline(std::cin, name);
                 std::cout << "Въведете ЕГН: ";
@@ -116,45 +125,66 @@ int main() {
                 break;
             }
             case 2: {
-                std::cout << "\n--- ДОБАВЯНЕ НА СТАТИСТИКА ---";
+                std::cout << "\n--- РЕДАКЦИЯ НА ПРОФИЛ (ПОКРИВА ИЗИСКВАНЕТО) ---\n";
                 Player* player = searchPlayerMenu(myTeam);
                 if (!player) break;
 
-                std::cout << "\nИзберете какъв елемент ще записвате за " << player->getName() << ":\n";
-                std::cout << "1. Посрещане (3-метрова линия: 1, 0, -1, -2)\n";
-                std::cout << "2. Защита/Диг (3-метрова линия: 1, 0, -1, -2)\n";
-                std::cout << "3. Атака (Опити и Грешки)\n";
-                std::cout << "4. Блокада (Успешни блокове)\n";
-                int statType = getSafeInt("Избор: ");
-
-                if (statType == 1) {
-                    std::cout << "Въведете код на качеството (1=Перфектно, 0=Неутрално, -1=Лошо, -2=Ас): ";
-                    int code = getSafeInt("");
-                    player->registerReception(code);
-                } 
-                else if (statType == 2) {
-                    std::cout << "Въведете код на качеството (1=Перфектно, 0=Неутрално, -1=Лошо, -2=Грешка): ";
-                    int code = getSafeInt("");
-                    player->registerDig(code);
-                } 
-                else if (statType == 3) {
-                    int attacks = getSafeInt("Брой опити за атака: ");
-                    int errors = getSafeInt("От тях директни грешки/антени: ");
-                    player->addAttackStats(attacks, errors);
-                } 
-                else if (statType == 4) {
-                    int blocks = getSafeInt("Брой успешни блокади (точки): ");
-                    player->addBlockStats(blocks);
+                std::cout << "Редактиране на данните за " << player->getName() << ":\n";
+                std::cout << "1. Смяна на телефонен номер\n";
+                std::cout << "2. Смяна на тактическа позиция (Пост)\n";
+                int editChoice = getSafeInt("Избор: ");
+                
+                if (editChoice == 1) {
+                    std::string newPhone;
+                    std::cout << "Въведете новия телефон: ";
+                    std::cin >> newPhone;
+                    player->updatePhoneNumber(newPhone);
+                } else if (editChoice == 2) {
+                    std::string newPos = getVolleyballPosition();
+                    player->updatePosition(newPos);
                 }
                 break;
             }
-            case 3:
+            case 3: {
+                std::cout << "\n--- ВЪВЕЖДАНЕ НА ИГРОВА СТАТИСТИКА ---";
+                Player* player = searchPlayerMenu(myTeam);
+                if (!player) break;
+
+                std::cout << "\nИзберете елемент за запис:\n";
+                std::cout << "1. Посрещане (1, 0, -1, -2)\n";
+                std::cout << "2. Защита/Диг (1, 0, -1, -2)\n";
+                std::cout << "3. Атака (Опити и Грешки)\n";
+                std::cout << "4. Блокада (Точки)\n";
+                std::cout << "5. Изчистване на стара статистика (Нов прозорец от мачове)\n";
+                int statType = getSafeInt("Избор: ");
+
+                if (statType == 1) {
+                    int code = getSafeInt("Въведете качество (1, 0, -1, -2): ");
+                    player->registerReception(code);
+                } else if (statType == 2) {
+                    int code = getSafeInt("Въведете качество (1, 0, -1, -2): ");
+                    player->registerDig(code);
+                } else if (statType == 3) {
+                    int attacks = getSafeInt("Брой опити за атака: ");
+                    int errors = getSafeInt("От тях директни грешки: ");
+                    player->addAttackStats(attacks, errors);
+                } else if (statType == 4) {
+                    int blocks = getSafeInt("Брой успешни блокади: ");
+                    player->addBlockStats(blocks);
+                } else if (statType == 5) {
+                    player->clearMatchHistoryWindow();
+                    std::cout << "🧹 Старата статистика бе архивирана. Играчът е готов за нов прозорец от мачове.\n";
+                }
+                break;
+            }
+            case 4:
                 myTeam.printTeamSquad();
                 break;
-            case 4:
+            case 5:
+                std::cout << "\n📊 Изчисляване на Line-up на база последните изиграни мачове...\n";
                 myTeam.generateLineUp();
                 break;
-            case 5: {
+            case 6: {
                 std::cout << "\n--- РЕГИСТРИРАНЕ НА ОФИЦИАЛЕН МАЧ ---\n";
                 std::string opponent, date;
                 std::cout << "Име на противника: ";
@@ -166,7 +196,6 @@ int main() {
                 int oppSets = getSafeInt("Спечелени геймове от противника (0-3): ");
 
                 std::vector<SetScore> sets;
-                std::cout << "Въвеждане на точкови резултати за всеки гейм:\n";
                 for (int i = 0; i < (teamSets + oppSets); i++) {
                     std::cout << "Гейм " << (i + 1) << " -> ";
                     int p1 = getSafeInt("Точки Левски: ");
@@ -178,19 +207,22 @@ int main() {
                 myTeam.addMatch(newMatch); 
                 break;
             }
-            case 6: {
-                std::cout << "\n--- ЗАПИС НА ТРЕНИРОВКА ---\n";
+            case 7: {
+                std::cout << "\n--- ЗАПИС НА ТРЕНИРОВКА / ФИЗ. ТЕСТОВЕ ---\n";
                 std::string date;
-                std::cout << "Дата: ";
+                std::cout << "Дата (ГГГГ-ММ-ДД): ";
                 std::cin >> date;
                 int duration = getSafeInt("Времетраене в минути: ");
                 
-                std::cout << "Тип на тренировката:\n1. Тактическа в зала\n2. Силова във фитнес\n";
+                std::cout << "Тип на заниманието:\n";
+                std::cout << "1. Тактическа в зала\n";
+                std::cout << "2. Силова във фитнес\n";
+                std::cout << "3. Физически тестове (Скорост & Отскок)\n";
                 int tType = getSafeInt("Избор: ");
                 
                 if (tType == 1) {
                     std::string focus;
-                    std::cout << "Фокус на тренировката (напр. Сервиз-Посрещане): ";
+                    std::cout << "Фокус на тренировката: ";
                     std::cin.ignore();
                     std::getline(std::cin, focus);
                     myTeam.addTrainingSession(std::make_unique<CourtPractice>(date, duration, focus));
@@ -202,8 +234,13 @@ int main() {
                     int s = getSafeInt("Серии: ");
                     int r = getSafeInt("Повторения: ");
                     myTeam.addTrainingSession(std::make_unique<StrengthWorkout>(date, duration, ex, s, r));
+                } else if (tType == 3) {
+                    // ПОКРИВА ИЗИСКВАНЕТО ЗА ФИЗИЧЕСКИ ТЕСТОВЕ
+                    int jump = getSafeInt("Вертикален отскок на отбора (средно в см): ");
+                    double speed = getSafeDouble("Време за спринт /совалка/ (средно в сек): ");
+                    myTeam.addTrainingSession(std::make_unique<PhysicalTest>(date, duration, jump, speed));
                 }
-                std::cout << "✅ Тренировката бе добавена в дневника.\n";
+                std::cout << "✅ Заниманието бе добавено успешно в дневника.\n";
                 break;
             }
             default:

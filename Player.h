@@ -8,14 +8,14 @@ private:
     std::string position;
     int jerseyNumber;
     
-    // Статистика
+    // Статистически показатели
     int totalAttacks;
     int attackErrors;
     int aces;
     int serviceErrors;
     int blocks;
     
-    // Нова точкова система за посрещане и защита
+    // Точкова система за посрещане и защита (3-метрова линия)
     int receptionScore; 
     int digScore;       
 
@@ -31,9 +31,13 @@ public:
     void addServiceStats(int newAces, int errors);
     void addBlockStats(int newBlocks);
     
-    // Нови методи за регистрация на отиграванията
     void registerReception(int qualityCode);
     void registerDig(int qualityCode);
+
+    // Нови методи за редакция на профила и контрол на статистическия прозорец
+    void updatePhoneNumber(const std::string& newPhone);
+    void updatePosition(const std::string& newPos);
+    void clearMatchHistoryWindow();
 
     double getAttackEfficiency() const;
     int getReceptionScore() const;

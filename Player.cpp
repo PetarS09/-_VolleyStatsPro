@@ -50,22 +50,46 @@ void Player::addBlockStats(int newBlocks) {
     }
 }
 
-// Опростено количествено оценяване на посрещането
 void Player::registerReception(int qualityCode) {
     if (position == "Център" || position == "Диагонал") {
         std::cout << "⚠️ Тактическо предупреждение: Играч на позиция " << position << " не трябва да посреща!\n";
         return;
     }
-    if (qualityCode == 1 || qualityCode == 0 || qualityCode == -1 || qualityCode == -2) {
+    if (qualityCode == 1 || qualityCode == 0 || qualityCode == -1 || qualityCode == -2) { {
         receptionScore += qualityCode;
     }
 }
+}
 
-// Опростено количествено оценяване на защитата
 void Player::registerDig(int qualityCode) {
     if (qualityCode == 1 || qualityCode == 0 || qualityCode == -1 || qualityCode == -2) {
         digScore += qualityCode;
     }
+}
+
+// РЕДАКЦИЯ НА ДАННИ (Покрива изискването от заданието)
+void Player::updatePhoneNumber(const std::string& newPhone) {
+    if (!newPhone.empty() && newPhone.length() >= 6) {
+        this->phone = newPhone;
+        std::cout << "✅ Телефонният номер бе обновен успешно.\n";
+    } else {
+        std::cout << "❌ Невалиден телефонен номер!\n";
+    }
+}
+
+void Player::updatePosition(const std::string& newPos) {
+    this->position = newPos;
+    std::cout << "✅ Позицията на играча бе променена на: " << newPos << "\n";
+}
+
+// ПЛАВАЩ ПРОЗОРЕЦ НА СТАТИСТИКАТА (Покрива изискването за "последните мачове")
+void Player::clearMatchHistoryWindow() {
+    this->totalAttacks = 0;
+    this->attackErrors = 0;
+    this->aces = 0;
+    this->blocks = 0;
+    this->receptionScore = 0;
+    this->digScore = 0;
 }
 
 double Player::getAttackEfficiency() const {
@@ -76,7 +100,6 @@ double Player::getAttackEfficiency() const {
 int Player::getReceptionScore() const { return receptionScore; }
 int Player::getDigScore() const { return digScore; }
 
-// Обновена точкова оценка според ролята и обема на опитите
 double Player::getOverallPerformanceScore() const {
     double baseScore = 0.0;
     double experienceFactor = 1.0;
@@ -90,12 +113,10 @@ double Player::getOverallPerformanceScore() const {
         baseScore = (getAttackEfficiency() * 70.0) + (aces * 4.0) + (blocks * 3.0);
     } 
     else if (position == "Разпределител") {
-        // Разпределителят зависи силно от баланса си в защита
         baseScore = (digScore * 5.0) + (aces * 4.0) + (getAttackEfficiency() * 20.0);
     } 
     else { // Посрещач и Либеро
         if (totalAttacks < 10 && position == "Посрещач") experienceFactor = 0.5;
-        // Посрещането и защитата директно добавят/вадят точки от рейтинга
         baseScore = (receptionScore * 6.0) + (digScore * 4.0) + (getAttackEfficiency() * 20.0);
     }
 
