@@ -169,3 +169,24 @@ void Team::printTrainingLog() const {
     }
     std::cout << "======================================================\n\n";
 }
+
+Player* Team::findPlayerByName(const std::string& firstName) {
+    for (const auto& p : players) {
+        // Вземаме първото име (до първия интервал)
+        std::string pName = p->getName();
+        std::string first = pName.substr(0, pName.find(' '));
+        if (first == firstName) {
+            return p.get();
+        }
+    }
+    return nullptr;
+}
+
+Player* Team::findPlayerByJersey(int jerseyNum) {
+    for (const auto& p : players) {
+        if (p->getJerseyNumber() == jerseyNum) {
+            return p.get();
+        }
+    }
+    return nullptr;
+}

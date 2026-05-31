@@ -24,6 +24,8 @@ public:
     Team(std::string name, std::string category);
 
     void addPlayer(std::unique_ptr<Player> player);
+    Player* findPlayerByName(const std::string& firstName);
+    Player* findPlayerByJersey(int jerseyNum);
     void setCoach(std::unique_ptr<Coach> coach);
     void addMatch(const Match& match);
     void addTrainingSession(std::unique_ptr<TrainingSession> session);
