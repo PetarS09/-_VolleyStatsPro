@@ -5,7 +5,7 @@
 
 class Player : public Person {
 private:
-    std::string position; // "Разпределител", "Диагонал", "Център", "Посрещач", "Либеро"
+    std::string position;
     int jerseyNumber;
     
     // Статистика
@@ -14,9 +14,10 @@ private:
     int aces;
     int serviceErrors;
     int blocks;
-    int positiveReceptions;
-    int totalReceptions;
-    int successfulDigs; // Нова статистика за защита (главно за Разпределител/Либеро)
+    
+    // Нова точкова система за посрещане и защита
+    int receptionScore; 
+    int digScore;       
 
 public:
     Player(std::string name, std::string egn, std::string phone, std::string birthDate, 
@@ -29,13 +30,14 @@ public:
     void addAttackStats(int attacks, int errors);
     void addServiceStats(int newAces, int errors);
     void addBlockStats(int newBlocks);
-    void addReceptionStats(int positive, int total);
-    void addDigStats(int digs); // Сетър за защита
+    
+    // Нови методи за регистрация на отиграванията
+    void registerReception(int qualityCode);
+    void registerDig(int qualityCode);
 
     double getAttackEfficiency() const;
-    double getReceptionPercentage() const;
-    
-    // Новата разширена формула за рейтинг
+    int getReceptionScore() const;
+    int getDigScore() const;
     double getOverallPerformanceScore() const; 
 
     void printInfo() const override;
