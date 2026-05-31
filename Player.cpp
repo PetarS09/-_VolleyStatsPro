@@ -12,9 +12,9 @@ int Player::getJerseyNumber() const { return jerseyNumber; }
 
 std::string Player::getAgeGroup() const {
     int age = getAge();
-    if (age <= 16) return "U16";
-    if (age <= 18) return "U18";
-    if (age <= 21) return "U21";
+    if (age < 16) return "U16";
+    if (age < 18) return "U18";
+    if (age < 21) return "U21";
     return "Мъже/Жени";
 }
 
